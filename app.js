@@ -10,8 +10,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to running database
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PW}@127.0.0.1:27017/monolithic_app_db`, 
-    {useNewUrlParser: true});
+mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PW}@${process.env.DB_HOST}:${process.env.DB_PORT}/monolithic_app_db`, 
+    { useNewUrlParser: true, useUnifiedTopology: true });
 
 // User schema for mongodb
 const UserSchema = mongoose.Schema({
@@ -51,5 +51,5 @@ app.post('/register', function(req, res) {
 
 });
 
-app.listen(8080);
-console.log("Visit app at http://localhost:8080")
+app.listen(3000);
+console.log("Visit app at http://localhost:3000")

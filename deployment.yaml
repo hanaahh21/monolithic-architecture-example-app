@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: monolithic-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: monolithic-app
+  template:
+    metadata:
+      labels:
+        app: monolithic-app
+    spec:
+      containers:
+        - name: monolithic-app
+          image: monolithic-architecture-app:latest # Replace with your Docker Hub image if using a registry
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_USER
+              value: "root"
+            - name: DB_PW
+              value: "example"
+            - name: DB_HOST
+              value: "mongo"
+            - name: DB_PORT
+              value: "27017"
+          command: ["node", "app.js"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: monolithic-app-service
+spec:
+  selector:
+    app: monolithic-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort # Change to LoadBalancer if using cloud provider
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "root"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "example"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
